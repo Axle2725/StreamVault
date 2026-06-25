@@ -7,7 +7,7 @@
 // Register), keeping the primary/secondary meaning consistent
 // across the whole app.
 
-import { Movie } from "../types/movie";
+import type { Movie } from "../types/movie";
 import { getImageUrl } from "../services/tmdb";
 import "./Hero.css";
 

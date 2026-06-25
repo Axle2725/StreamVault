@@ -4,7 +4,7 @@
 // showing the rating and release year, and the poster gets the
 // same purple glow used on .sv-btn-secondary hover elsewhere.
 
-import { Movie } from "../types/movie";
+import type { Movie } from "../types/movie";
 import { getImageUrl } from "../services/tmdb";
 import "./MovieCard.css";
 

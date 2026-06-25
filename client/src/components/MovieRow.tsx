@@ -5,7 +5,7 @@
 // .sv-reveal utility so each row fades/slides up as it enters the
 // viewport, same as the scroll-reveal behaviour elsewhere in the app.
 
-import { Movie } from "../types/movie";
+import type { Movie } from "../types/movie";
 import { useScrollReveal } from "../hooks/useScrollReveal";
 import MovieCard from "./MovieCard";
 import "./MovieRow.css";

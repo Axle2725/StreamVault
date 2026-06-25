@@ -10,7 +10,7 @@ import { useTrendingMovies, useGenres } from "../hooks/useMovies";
 import Hero from "../components/Hero";
 import MovieRow from "../components/MovieRow";
 import GenreRow from "../components/GenreRow";
-import { Movie } from "../types/movie";
+import type { Movie } from "../types/movie";
 import "./Home.css";
 
 export default function Home() {

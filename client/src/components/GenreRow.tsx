@@ -5,7 +5,7 @@
 // useMoviesByGenre in a loop inside Home) keeps each genre's
 // query as a stable, independent hook call per component instance.
 
-import { Genre, Movie } from "../types/movie";
+import type { Genre, Movie } from "../types/movie";
 import { useMoviesByGenre } from "../hooks/useMovies";
 import MovieRow from "./MovieRow";
 

@@ -17,7 +17,7 @@
 // proxy these calls through the Express backend instead — see the
 // note at the bottom of this file.
 
-import { Movie, Genre } from "../types/movie";
+import type { Movie, Genre } from "../types/movie";
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p";
