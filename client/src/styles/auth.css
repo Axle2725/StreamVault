@@ -1,0 +1,258 @@
+/* ─────────────────────────────────────────────
+   auth.css
+   Shared styles for every auth-flow page
+   (Login, Register, and any future Forgot
+   Password / Reset Password pages). Builds on
+   top of theme.css for palette, fonts, reset,
+   keyframes, and the aurora/grain/particle
+   background.
+───────────────────────────────────────────── */
+
+@import "./theme.css";
+
+/* ── PAGE LAYOUT ── */
+.sv-auth-page {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.sv-auth-topbar {
+  padding: 1.4rem 3rem;
+}
+
+.sv-auth-logo {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.9rem;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  background: linear-gradient(
+    135deg,
+    var(--sv-bright-purple) 0%,
+    var(--sv-hot-red) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.sv-auth-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* ── CARD ── */
+.sv-auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: linear-gradient(
+    160deg,
+    rgba(26, 0, 48, 0.75) 0%,
+    rgba(13, 0, 26, 0.88) 100%
+  );
+  border: 1px solid rgba(176, 77, 255, 0.25);
+  border-radius: 16px;
+  padding: 2.75rem 2.5rem;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  animation: sv-fadeUp 0.7s ease 0.1s forwards;
+}
+
+.sv-auth-card-title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 2.4rem;
+  letter-spacing: 0.05em;
+  text-align: center;
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    var(--sv-bright-purple) 60%,
+    var(--sv-hot-red) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.4rem;
+}
+
+.sv-auth-card-sub {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--sv-muted);
+  margin-bottom: 2.25rem;
+}
+
+/* ── FORM ── */
+.sv-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.sv-auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.sv-auth-field label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(240, 232, 255, 0.6);
+}
+
+.sv-auth-input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(176, 77, 255, 0.2);
+  border-radius: 8px;
+  color: var(--sv-ghost);
+  font-family: "Inter", sans-serif;
+  font-size: 0.95rem;
+  outline: none;
+  transition:
+    border-color 0.25s,
+    box-shadow 0.25s;
+}
+.sv-auth-input::placeholder {
+  color: rgba(240, 232, 255, 0.25);
+}
+.sv-auth-input:focus {
+  border-color: var(--sv-vivid-purple);
+  box-shadow: 0 0 0 3px rgba(139, 32, 216, 0.2);
+}
+
+/* ── PASSWORD WRAPPER & EYE TOGGLE ── */
+.sv-auth-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Prevents typed text from sliding under the eye button */
+.sv-auth-input--has-icon {
+  padding-right: 2.75rem;
+}
+
+.sv-auth-eye-btn {
+  position: absolute;
+  right: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: rgba(240, 232, 255, 0.35);
+  line-height: 1;
+  transition: color 0.18s ease;
+}
+.sv-auth-eye-btn:hover {
+  color: rgba(240, 232, 255, 0.85);
+}
+.sv-auth-eye-btn:focus-visible {
+  outline: 2px solid rgba(176, 77, 255, 0.7);
+  outline-offset: 2px;
+  border-radius: 4px;
+  color: rgba(240, 232, 255, 0.85);
+}
+
+/* ── ERROR ── */
+.sv-auth-error {
+  font-size: 0.82rem;
+  color: #ff6b81;
+  background: rgba(204, 0, 24, 0.12);
+  border: 1px solid rgba(255, 23, 68, 0.3);
+  border-radius: 8px;
+  padding: 0.65rem 0.9rem;
+  animation: sv-fadeIn 0.3s ease;
+}
+
+/* ── SUBMIT BUTTON ── */
+.sv-auth-submit {
+  margin-top: 0.4rem;
+  width: 100%;
+  padding: 0.9rem;
+  border: none;
+  border-radius: 8px;
+  font-family: "Inter", sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: #fff;
+  background: linear-gradient(135deg, var(--sv-crimson), #8b000e);
+  box-shadow: 0 4px 24px rgba(204, 0, 24, 0.4);
+  transition:
+    transform 0.2s,
+    box-shadow 0.3s,
+    opacity 0.2s;
+}
+.sv-auth-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(204, 0, 24, 0.55);
+}
+.sv-auth-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── DIVIDER ── */
+.sv-auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.6rem 0 1.25rem;
+}
+.sv-auth-divider span {
+  font-size: 0.72rem;
+  color: rgba(240, 232, 255, 0.3);
+  white-space: nowrap;
+}
+.sv-auth-divider::before,
+.sv-auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(176, 77, 255, 0.15);
+}
+
+/* ── SWITCH LINK (e.g. "Already have an account? Log in") ── */
+.sv-auth-switch {
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--sv-muted);
+}
+.sv-auth-switch-link {
+  color: var(--sv-bright-purple);
+  font-weight: 600;
+  text-decoration: none;
+  margin-left: 0.35rem;
+  transition: color 0.2s;
+}
+.sv-auth-switch-link:hover {
+  color: var(--sv-hot-red);
+  text-decoration: underline;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 480px) {
+  .sv-auth-card {
+    padding: 2.25rem 1.5rem;
+  }
+  .sv-auth-topbar {
+    padding: 1rem 1.25rem;
+  }
+}

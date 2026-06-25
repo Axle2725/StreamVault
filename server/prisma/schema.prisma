@@ -1,0 +1,248 @@
+// ============================================================
+// StreamVault — Prisma Schema
+// server/prisma/schema.prisma
+//
+// Supabase requires two connection URLs:
+//   DATABASE_URL — pooled via pgBouncer  (runtime queries)
+//   DIRECT_URL   — direct to PostgreSQL  (migrations only)
+//
+// Find both in: Supabase Dashboard →
+//               Project Settings → Database → Connection string
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================================
+// ENUMS
+// These replace the CHECK constraints from the SQL schema.
+// Any value with a hyphen uses @map() to keep the DB string
+// exactly as-is while giving Prisma a valid identifier.
+// ============================================================
+
+enum Role {
+  admin
+  moderator
+  viewer
+  guest
+}
+
+enum ContentType {
+  movie
+  series
+}
+
+enum Rating {
+  G
+  PG
+  PG_13 @map("PG-13")
+  R
+  TV_Y  @map("TV-Y")
+  TV_G  @map("TV-G")
+  TV_PG @map("TV-PG")
+  TV_14 @map("TV-14")
+  TV_MA @map("TV-MA")
+}
+
+// ============================================================
+// MODELS
+//
+// Naming conventions:
+//   - Model names are PascalCase  (Prisma / TypeScript)
+//   - @@map() maps each model to its snake_case table name
+//   - @map()  maps each field  to its snake_case column name
+//   - @db.Uuid keeps columns as native UUID, not TEXT
+//   - @db.Timestamptz() maps to TIMESTAMPTZ (timezone-aware)
+//   - @updatedAt tells Prisma to auto-set the field on update
+// ============================================================
+
+// ------------------------------------------------------------
+// User
+// Covers all account types. Guests have NULL email +
+// passwordHash, isGuest = true, and role = guest.
+// ------------------------------------------------------------
+model User {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email        String?  @unique
+  passwordHash String?  @map("password_hash")
+  role         Role     @default(viewer)
+  isGuest      Boolean  @default(false) @map("is_guest")
+  isActive     Boolean  @default(true)  @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt    DateTime @updatedAt      @map("updated_at") @db.Timestamptz()
+
+  profiles      Profile[]
+  refreshTokens RefreshToken[]
+  auditLogs     AuditLog[]
+
+  @@map("users")
+}
+
+// ------------------------------------------------------------
+// Profile
+// Multiple profiles per registered user (Netflix-style).
+// Guests do not receive profiles.
+// ------------------------------------------------------------
+model Profile {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  name      String
+  avatarUrl String?  @map("avatar_url")
+  isKids    Boolean  @default(false) @map("is_kids")
+  pin       String?  // bcrypt-hashed parental control PIN
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt DateTime @updatedAt      @map("updated_at") @db.Timestamptz()
+
+  user             User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  watchlists       Watchlist[]
+  playbackProgress PlaybackProgress[]
+
+  @@index([userId])
+  @@map("profiles")
+}
+
+// ------------------------------------------------------------
+// RefreshToken
+// One row per active session. Guests are never issued one —
+// they get a long-lived access token instead (see tokenService).
+// ------------------------------------------------------------
+model RefreshToken {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  token     String   @unique
+  expiresAt DateTime @map("expires_at") @db.Timestamptz()
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
+// ------------------------------------------------------------
+// Content
+// The central catalogue table for movies and series.
+// isGuestAccessible controls what guests can browse/stream.
+// ------------------------------------------------------------
+model Content {
+  id                String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title             String
+  description       String?
+  type              ContentType
+  genres            String[]
+  rating            Rating?
+  thumbnailUrl      String?     @map("thumbnail_url")
+  trailerUrl        String?     @map("trailer_url")
+  releaseYear       Int?        @map("release_year")
+  isPublished       Boolean     @default(false) @map("is_published")
+  isGuestAccessible Boolean     @default(false) @map("is_guest_accessible")
+  createdAt         DateTime    @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt         DateTime    @updatedAt      @map("updated_at") @db.Timestamptz()
+
+  episodes         Episode[]
+  watchlists       Watchlist[]
+  playbackProgress PlaybackProgress[]
+
+  @@index([isPublished])
+  @@index([isGuestAccessible])
+  @@map("content")
+}
+
+// ------------------------------------------------------------
+// Episode
+// Belongs to a series. The composite unique ensures no two
+// episodes share the same season + episode number.
+// ------------------------------------------------------------
+model Episode {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  contentId       String   @map("content_id") @db.Uuid
+  seasonNumber    Int      @map("season_number")
+  episodeNumber   Int      @map("episode_number")
+  title           String
+  description     String?
+  videoUrl        String?  @map("video_url")
+  durationSeconds Int?     @map("duration_seconds")
+  thumbnailUrl    String?  @map("thumbnail_url")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  content          Content            @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  playbackProgress PlaybackProgress[]
+
+  @@unique([contentId, seasonNumber, episodeNumber])
+  @@index([contentId])
+  @@map("episodes")
+}
+
+// ------------------------------------------------------------
+// Watchlist
+// Saved titles per profile. Not available to guests.
+// ------------------------------------------------------------
+model Watchlist {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  profileId String   @map("profile_id") @db.Uuid
+  contentId String   @map("content_id") @db.Uuid
+  addedAt   DateTime @default(now()) @map("added_at") @db.Timestamptz()
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, contentId])
+  @@index([profileId])
+  @@map("watchlists")
+}
+
+// ------------------------------------------------------------
+// PlaybackProgress
+// Tracks resume position per profile per title.
+// episodeId is NULL for movies. Not available to guests.
+//
+// The composite @@unique includes the nullable episodeId.
+// PostgreSQL treats NULLs as distinct, so a movie row (where
+// episodeId IS NULL) is unique — Prisma inherits this behaviour.
+// ------------------------------------------------------------
+model PlaybackProgress {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  profileId       String   @map("profile_id") @db.Uuid
+  contentId       String   @map("content_id") @db.Uuid
+  episodeId       String?  @map("episode_id") @db.Uuid
+  progressSeconds Int      @default(0) @map("progress_seconds")
+  completed       Boolean  @default(false)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  profile Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  content Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  episode Episode? @relation(fields: [episodeId], references: [id], onDelete: SetNull)
+
+  @@unique([profileId, contentId, episodeId])
+  @@index([profileId])
+  @@map("playback_progress")
+}
+
+// ------------------------------------------------------------
+// AuditLog
+// Admin/moderator action trail. userId is nullable so logs
+// are preserved even if the acting user is later deleted.
+// ------------------------------------------------------------
+model AuditLog {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String?  @map("user_id") @db.Uuid
+  action     String
+  entityType String?  @map("entity_type")
+  entityId   String?  @map("entity_id") @db.Uuid
+  metadata   Json?
+  ipAddress  String?  @map("ip_address")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@map("audit_logs")
+}

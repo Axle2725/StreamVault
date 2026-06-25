@@ -1,0 +1,296 @@
+/* ─────────────────────────────────────────────
+   theme.css
+   StreamVault shared design tokens.
+
+   Imported by every page's own stylesheet
+   (Landing.css, Login.css, Register.css,
+   Home.css, Profile.css, Browse.css, …).
+   Contains only what's truly shared across the
+   whole app: the color palette, fonts, base
+   reset, the aurora/grain/particle atmosphere,
+   generic scroll-reveal utility, and the button
+   system. Page-specific layout (hero, nav,
+   feature grids, auth cards, etc.) stays in each
+   page's own CSS file.
+───────────────────────────────────────────── */
+
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap");
+
+/* ── COLOR PALETTE ── */
+:root {
+  --sv-void: #06000c;
+  --sv-deep-purple: #1a0030;
+  --sv-mid-purple: #3d0060;
+  --sv-vivid-purple: #8b20d8;
+  --sv-bright-purple: #b04dff;
+  --sv-crimson: #cc0018;
+  --sv-hot-red: #ff1744;
+  --sv-ghost: #f0e8ff;
+  --sv-muted: rgba(240, 232, 255, 0.55);
+  --sv-card-bg: rgba(30, 0, 55, 0.55);
+  --sv-card-border: rgba(139, 32, 216, 0.25);
+}
+
+/* ── RESET & BASE ── */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background: var(--sv-void);
+  color: var(--sv-ghost);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SHARED KEYFRAMES ── */
+@keyframes sv-fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sv-fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sv-auroraShift {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(-3%, 2%) rotate(2deg);
+  }
+  66% {
+    transform: translate(2%, -3%) rotate(-1deg);
+  }
+  100% {
+    transform: translate(-1%, 1%) rotate(3deg);
+  }
+}
+
+@keyframes sv-auroraShift2 {
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translate(3%, -2%) rotate(-2deg) scale(1.04);
+  }
+  100% {
+    transform: translate(-2%, 3%) rotate(2deg) scale(0.98);
+  }
+}
+
+@keyframes sv-particleFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0);
+  }
+  10% {
+    opacity: 0.6;
+    transform: translateY(-8px) scale(1);
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100vh) scale(0.5);
+  }
+}
+
+/* ── SCROLL-REVEAL UTILITY ── */
+.sv-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
+}
+.sv-reveal.sv-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── ATMOSPHERE: AURORA BACKGROUND ── */
+.sv-aurora {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.sv-aurora::before {
+  content: "";
+  position: absolute;
+  width: 180%;
+  height: 180%;
+  top: -40%;
+  left: -40%;
+  background:
+    radial-gradient(
+      ellipse 60% 50% at 30% 40%,
+      rgba(139, 32, 216, 0.35) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 50% 60% at 70% 60%,
+      rgba(204, 0, 24, 0.28) 0%,
+      transparent 65%
+    ),
+    radial-gradient(
+      ellipse 80% 40% at 50% 20%,
+      rgba(61, 0, 96, 0.5) 0%,
+      transparent 60%
+    );
+  animation: sv-auroraShift 14s ease-in-out infinite alternate;
+}
+.sv-aurora::after {
+  content: "";
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  top: -50%;
+  left: -50%;
+  background:
+    radial-gradient(
+      ellipse 45% 55% at 75% 30%,
+      rgba(176, 77, 255, 0.2) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 55% 45% at 20% 70%,
+      rgba(255, 23, 68, 0.18) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 35% 65% at 55% 80%,
+      rgba(139, 32, 216, 0.22) 0%,
+      transparent 50%
+    );
+  animation: sv-auroraShift2 18s ease-in-out infinite alternate;
+}
+
+/* ── ATMOSPHERE: GRAIN OVERLAY ── */
+.sv-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── ATMOSPHERE: FLOATING PARTICLES ── */
+.sv-particles {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.sv-particle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  animation: sv-particleFloat linear infinite;
+}
+
+/* ── SHARED BUTTON SYSTEM ── */
+.sv-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 2.2rem;
+  border-radius: 6px;
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition:
+    transform 0.2s,
+    box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.sv-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.12);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.sv-btn:hover::before {
+  opacity: 1;
+}
+.sv-btn:active {
+  transform: scale(0.97);
+}
+
+.sv-btn-login,
+.sv-btn-primary {
+  background: linear-gradient(135deg, var(--sv-crimson), #8b000e);
+  color: #fff;
+  box-shadow: 0 4px 30px rgba(204, 0, 24, 0.4);
+}
+.sv-btn-login:hover,
+.sv-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 40px rgba(204, 0, 24, 0.6);
+}
+
+.sv-btn-register,
+.sv-btn-secondary {
+  background: linear-gradient(135deg, var(--sv-vivid-purple), #5a0090);
+  color: #fff;
+  box-shadow: 0 4px 30px rgba(139, 32, 216, 0.4);
+}
+.sv-btn-register:hover,
+.sv-btn-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 40px rgba(139, 32, 216, 0.65);
+}
+
+.sv-btn-guest,
+.sv-btn-ghost {
+  background: transparent;
+  color: var(--sv-muted);
+  border: 1px solid rgba(240, 232, 255, 0.2);
+}
+.sv-btn-guest:hover,
+.sv-btn-ghost:hover {
+  color: var(--sv-ghost);
+  border-color: rgba(176, 77, 255, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(176, 77, 255, 0.15);
+}
+
+.sv-btn-block {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}

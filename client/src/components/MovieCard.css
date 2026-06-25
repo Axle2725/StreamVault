@@ -1,0 +1,102 @@
+/* frontend/src/components/MovieCard.css */
+
+@import "../styles/theme.css";
+
+.movie-card {
+  position: relative;
+  flex: 0 0 160px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  scroll-snap-align: start;
+  transition: transform 0.25s ease;
+}
+
+.movie-card:hover {
+  transform: translateY(-6px);
+}
+
+.movie-card__poster {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  border-radius: 6px;
+  display: block;
+  background: var(--sv-card-bg);
+  border: 1px solid var(--sv-card-border);
+  transition: box-shadow 0.25s ease;
+}
+
+.movie-card:hover .movie-card__poster {
+  box-shadow: 0 10px 34px rgba(139, 32, 216, 0.45);
+}
+
+.movie-card__poster--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  text-align: center;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
+  color: var(--sv-muted);
+}
+
+.movie-card__chip {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--sv-card-bg);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--sv-card-border);
+  border-radius: 4px;
+  padding: 4px 9px;
+  font-family: "Inter", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--sv-ghost);
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.movie-card:hover .movie-card__chip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.movie-card__chip-rating {
+  color: var(--sv-bright-purple);
+}
+
+.movie-card__chip-year {
+  color: var(--sv-muted);
+}
+
+.movie-card__title {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--sv-ghost);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .movie-card,
+  .movie-card__chip,
+  .movie-card__poster {
+    transition: none;
+  }
+}

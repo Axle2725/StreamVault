@@ -1,0 +1,102 @@
+/* frontend/src/components/Hero.css
+ *
+ * Page-specific layout only — colors, fonts, and buttons all
+ * come from theme.css. No button rules here; Hero uses .sv-btn.
+ */
+
+@import "../styles/theme.css";
+
+.hero {
+  position: relative;
+  height: 64vh;
+  min-height: 420px;
+  background-color: var(--sv-deep-purple);
+  background-size: cover;
+  background-position: top center;
+  display: flex;
+  align-items: flex-end;
+}
+
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, var(--sv-void) 0%, transparent 55%),
+    linear-gradient(to right, var(--sv-void) 0%, transparent 50%),
+    radial-gradient(
+      ellipse 60% 50% at 80% 0%,
+      rgba(139, 32, 216, 0.25) 0%,
+      transparent 60%
+    );
+}
+
+.hero__content {
+  position: relative;
+  z-index: 1;
+  max-width: 560px;
+  padding: 0 4% 56px;
+}
+
+.hero__eyebrow {
+  display: inline-block;
+  font-family: "Inter", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sv-bright-purple);
+  margin-bottom: 14px;
+}
+
+.hero__title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: clamp(2.6rem, 6vw, 4.2rem);
+  letter-spacing: 0.02em;
+  line-height: 1.02;
+  margin: 0 0 14px;
+  color: var(--sv-ghost);
+}
+
+.hero__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Inter", sans-serif;
+  font-size: 0.9rem;
+  color: var(--sv-muted);
+  margin-bottom: 16px;
+}
+
+.hero__meta-rating {
+  color: var(--sv-bright-purple);
+  font-weight: 600;
+}
+
+.hero__meta-dot {
+  color: var(--sv-card-border);
+}
+
+.hero__overview {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--sv-muted);
+  margin: 0 0 28px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.hero__actions {
+  display: flex;
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .hero {
+    height: 56vh;
+  }
+  .hero__content {
+    max-width: 100%;
+  }
+}
